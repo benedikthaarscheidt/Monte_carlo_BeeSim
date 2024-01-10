@@ -63,7 +63,7 @@ BeeSim$new <- function (n) {
                        y=c(rnorm(10,mean=12,sd=5),rnorm(20,mean=42,sd=5),runif(20,0,50)),
                        age=rep(0,50))
   
-  self$monitor=data.frame(iter=0,beetles=nrow(self$beetles),food=nrow(self$food))
+  self$monitor=data.frame(iter=0,beetles=nrow(self$beetles),food=nrow(self$food), weekofyear=1)
 }
 ### Draw an individual beetle of the beetles data frame 
 ### Private Function indicated by the . 
@@ -120,13 +120,64 @@ BeeSim$.drawBeetle <- function (i,min.age=10) {
 #' 
 #' - None
 #' 
+#' 
+
+
+
+# Modify the function
+BeeSim$seasons <- function(iter) {
+  self = BeeSim
+  x = 2 * pi * nrow(self$monitor) / 53 - pi / 2
+  value_season = round(4.5 * sin(x) + 5.5)
+  return(value_season)
+}
+
+BeeSim$seasons_lakes <- function(iter) {
+  self = BeeSim
+  x = 2 * pi * iter / 53 - pi / 2
+  value_season_lakes = 1.5 * sin(x) + 2.5
+  return(value_season_lakes)
+}
+x_values_at_offset = numeric(0)
+find_offset_intersections <- function() {
+  self = BeeSim
+ 
+  
+  # Iterate through values and check for zero-crossings
+  for (i in 1:(nrow(self$monitor) - 1)) {
+    y1 = BeeSim$seasons_lakes(self$monitor$iter[i])
+    y2 = BeeSim$seasons_lakes(self$monitor$iter[i + 1])
+    
+    if ((y1 <= 0 && y2 >= 0) || (y1 >= 0 && y2 <= 0)) {
+      # Interpolate for more accurate zero-crossing
+      x_crossing = approxfun(c(y1, y2), c(self$monitor$iter[i], self$monitor$iter[i + 1]), rule = 2)(0)
+      x_values_at_offset = c(x_values_at_offset, x_crossing)
+    }
+  }
+  
+  return(x_values_at_offset)
+}
+BeeSim$seasons_lake <- function() {
+  self = BeeSim
+  c=2*pi*nrow(self$monitor)/53-pi/2
+  value_season_lake=1.5*sin(c)+2.5
+  return(value_season_lake)
+}
+
+
 
 BeeSim$drawLandscape <- function () {
+  self=BeeSim
+  if(BeeSim$seasons_lake() > 2.5){
+    c="green"}
+  else {c="yellow"}
+  scaled_x <- c(-0.5, 0.5, 0.5, 1.5, 0, -1.5, -0.5) * 2
+  scaled_y <- c(0, 0, 1, 1, 3, 1, 1) * 2
   plot(1,type="n",xlim=c(0,50),ylim=c(0,50),asp=1,xlab="",ylab="")
-  draw.circle(25,25,3,col="skyblue")
+  draw.circle(25,25,3*BeeSim$seasons_lake(),col="skyblue")
   drawTree <- function (x,y) {
-    polygon(x=c(-0.5,0.5,0.5,1.5,0,-1.5,-0.5)+x,y=c(0,0,1,1,3,1,1)+y,
-            col="green")
+    polygon(x = scaled_x + x, y = scaled_y + y,
+              col=c)
   }   
   drawTree(10,10)
   drawTree(12,12)  
@@ -152,7 +203,7 @@ BeeSim$drawLandscape <- function () {
 BeeSim$drawBeetles <- function () {
   self=BeeSim
   self$drawLandscape()
-  points(self$food,pch=15,col="grey80")
+  points(self$food,pch=15,col="grey80",cex=0.5)
   ## loop over beetles data frame and plot them, beetle by beetle    
   for (i in 1:nrow(BeeSim$beetles)) {
     self$.drawBeetle(i)
@@ -242,19 +293,19 @@ BeeSim$iter <- function (sd=1,sight=2,debug=TRUE) {
   self$food=self$food[idx,]
   ### check if beetle is in lake, if yes remove it 
   D=as.matrix(dist(rbind(BeeSim$beetles[,1:2],data.frame(x=25,y=25))))
-  idx=which(D[ncol(D),1:(ncol(D)-1)]<3)
+  idx=which(D[ncol(D),1:(ncol(D)-1)]<3*BeeSim$seasons_lake())
   if (length(idx)>0) {
     if (debug) {
       print(paste(length(idx),"beetle(s) in lake, dying ..."))
     }
     self$beetles=self$beetles[-idx,]
   }
-  ## remove 10% of food older than 10 iterations
-  ## TODO: No age, just 5% deleting?
+  ## remove 30% of food older than 10 iterations because otherwise there would be too much food 
+ 
   self$food$age=self$food$age+1
   idx=which(self$food$age>10)
   if (length(idx)>0) {
-    remove=idx[which(rbinom(length(idx),1,p=0.1)==1)]
+    remove=idx[which(rbinom(length(idx),1,p=0.3)==1)]
     if (debug) {
       print(paste("removing", length(remove),"food items ..."))
     }
@@ -264,9 +315,27 @@ BeeSim$iter <- function (sd=1,sight=2,debug=TRUE) {
     #print(paste()
   }
   ##   - create new food, add food items at the end of food data frame --> this specifies the quantity and the coordinates at which foods are produced. This has to change seasonally 
-  newfood=data.frame(x=c(rnorm(10,mean=12,sd=5),rnorm(20,mean=42,sd=5),runif(20,0,50)),
-                     y=c(rnorm(10,mean=12,sd=5),rnorm(20,mean=42,sd=5),runif(20,0,50)),age=rep(0,50))
-  self$food=rbind(self$food,newfood)
+  # Adjust lengths to be the same
+
+  
+  # Create new food data frame
+  newfood = data.frame(
+    x = c(
+      rnorm(2 * BeeSim$seasons(), mean = 12, sd = 5),
+      rnorm(4 * BeeSim$seasons(), mean = 42, sd = 5),
+      runif(4 * BeeSim$seasons(), 0, 50)
+    ),
+    y = c(
+      rnorm(2 * BeeSim$seasons(), mean = 12, sd = 5),
+      rnorm(4 * BeeSim$seasons(), mean = 42, sd = 5),
+      runif(4 * BeeSim$seasons(), 0, 50)
+    ),
+    age = rep(0, 10*BeeSim$seasons())
+  )
+  
+  # Add newfood to the food data frame
+  BeeSim$food = rbind(BeeSim$food, newfood)
+  
   ### Next: 
   ### remove food outside of grid
   idx=unique(c(which(self$food$x>50),which(self$food$x<0),which(self$food$y>50),which(self$food$y<0)))
@@ -279,7 +348,7 @@ BeeSim$iter <- function (sd=1,sight=2,debug=TRUE) {
     self$food=self$food[idx,]
   }
   idx=nrow(self$monitor)
-  self$monitor=rbind(self$monitor,data.frame(iter=self$monitor$iter[idx]+1,beetles=nrow(self$beetles),food=nrow(self$food)))
+  self$monitor=rbind(self$monitor,data.frame(iter=self$monitor$iter[idx]+1,beetles=nrow(self$beetles),food=nrow(self$food),weekofyear=(self$monitor$weekofyear[idx] %% 53) + 1))
   ### Mating: Might be placed in own function
   ### let girls look for boys if energy > 10 and age > 10
   ### check if male is in sight (D<5 for instance)
@@ -348,6 +417,8 @@ BeeSim$mating <- function (sight=4,min.female=10,min.male=5,min.age=10,childs=5,
   self$beetles=self$beetles[sample(1:nrow(self$beetles)),]
 }
 
+
+
 #'
 #' ## BeeSim$plotMonitor() - plot simulation monitor
 #' 
@@ -356,13 +427,27 @@ BeeSim$mating <- function (sight=4,min.female=10,min.male=5,min.age=10,childs=5,
 #' 
 #' Arguments: None
 #' 
-BeeSim$plotMonitor <- function () {
-  self=BeeSim
-  plot(self$monitor$food ~ self$monitor$iter,col="grey60",type="l",ylim=c(0,max(self$monitor$food)),ylab="Counts",xlab="Iterations",main="Model Monitoring",lwd=3)
-  grid()
-  points(self$monitor$beetles ~ self$monitor$iter,col="blue",type="l",lwd=3)
+BeeSim$plotMonitor <- function() {
+  self = BeeSim
+  iter = self$monitor$iter
   
+  # Adjust x-axis limits based on the range of iterations
+  xlim = range(iter)
+  
+  plot(self$monitor$food ~ iter, col = "grey60", type = "l", ylim = c(0, max(self$monitor$food)), xlim = xlim, ylab = "Counts", xlab = "Iterations", main = "Model Monitoring", lwd = 3)
+  grid()
+  points(self$monitor$beetles ~ iter, col = "blue", type = "l", lwd = 3)
+  
+  # Add seasonal indicators (vertical lines)
+  for (value in x_values_at_offset) {
+    abline(v = value, col = "green", lty = 2)
+  }
 }
+
+
+
+
+
 
 
 #' ## BeeSim$main() - function to run a simulation
