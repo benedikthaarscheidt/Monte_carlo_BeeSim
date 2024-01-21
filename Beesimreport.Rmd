@@ -1,13 +1,35 @@
 ---
 title: "Beesimreport"
-author: "Benedikt Haarscheidt"
+author: "Ahmed Tijani Akinfalabi, Benedikt Haarscheidt, Lisa Skroblin, Jaesub Kim"
 date: "`r Sys.Date()`"
 output: html_document
+bibliography: beesim.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Abstract
+
+Once all the other parts are complete it can be started.
+
+
+# Introduction
+
+Monte Carlo simulation(MCS) is a technique primarily used to estimate possible outcomes of uncertain events. Operating by modeling the probability of various outcomes in systems where predictions are challenging due to the intervention of random variables, this method finds widespread application in predicting unpredictable systems, with ecosystems being a quintessential example.
+
+MCS is versatile, applicable across various fields such as economics, physics, biology, and more. From an ecological perspective, MCS can be employed to model and predict the dynamic nature of ecosystems, considering diverse environmental factors and interactions. For instance, it can be used to predict changes in the population of a species due to random variables related to seasons, food availability, or predator-prey relationships(@marini2016role, @sinha2020modeling, @sole1992nonlinear, @fullman2021simulation). Furthermore, MCS has gained attention, especially in the context of infectious diseases following the COVID-19 pandemic (@triambak2021random, @maltezos2021novel). Numerous variables related to infectious diseases are greatly affected by seasonal changes (@kakoullis2023influenza). Variables such as seasonal floating population, temperature changes and resulting changes in immunity, and people's activity radius can have a significant impact on the infected population.
+
+MCS plays a crucial role in studying population dynamics at the cellular level. Similar to simulations in animal ecosystems, MCS is consistently used to predict the dynamics of cell populations based on interactions between cells (such as metabolic byproducts, physical contact, nutrients, competition, and space)(@charlebois2019modeling). Predicting bacterial population growth, which is essential in the production and distribution of food, is another critical application of MCS (@montville2005monte, @lau2022development). In addition, it can be widely used in research related to protein design and dynamics, which are very difficult to directly observe at the molecular level (@foffi2013macromolecular, @michael2022much).
+
+Apart from its versatility, one of the significant advantages of MCS is its cost-effectiveness, as it allows for experimentation without the need for actual physical experiments. Additionally, MCS often serves as a foundation for other simulations due to its clear principles. Numerous models have been written based on MCS (@bermudez1989analysis, @de2023mam).
+
+Inspired by the principles of MCS, we have constructed a model to predict how the population of beetles evolves and persists in a closed ecosystem undergoing seasonal environmental changes. Ecosystems, sensitive to changes in the natural environment, provide an ideal backdrop for investigating adaptability and sensitivity within ecological systems by introducing specific environmental changes into our ecological model.
+
+The diverse examples mentioned earlier closely align with the simple model we have established for this report. The seasonal dependencies of environmental variables in cases of infectious diseases are strikingly similar to the environmental variables in our model. Similarly, the examples of interactions among cell populations have analogies to the dynamics of ecosystems, and are ultimately not all that different from what we are investigating in this report.
+
+In the Results and Discussion section of this report, we will discuss the overall changes resulting from variations in food distribution and environmental changes. Through this, we aim to enhance our understanding of how these two variables contribute to the complexity of beetle population dynamics. Ultimately, we may gain insights into how to model species behavior in less predictable environments. Furthermore, based on this understanding, we hope to increase our understanding of Monte Carlo simulations that can be applied to various fields, and to make a significant contribution to the overall theoretical and practical framework for our future research activities.
 
 ```{r eval=FALSE ,fig=TRUE,fig.width=16,fig.height=9}
 set.seed(123)
@@ -27,9 +49,4 @@ BeeSim$drawBeetles()
 BeeSim$plotMonitor()
 ```
 
-```{r}
-set.seed(123)
-source('beesim.R')
-BeeSim$main()
-```
-
+# Literature
