@@ -8,6 +8,7 @@ bibliography: beesim.bib
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+<<<<<<< HEAD
 ```
 
 # Abstract
@@ -50,3 +51,35 @@ BeeSim$plotMonitor()
 ```
 
 # Literature
+=======
+source('BeeSim.R')
+```
+
+```{r}
+start_time = Sys.time()
+#par(mfrow=c(2,3) , mai=c(0.2,0.2,0.7,0.1))
+BeeSim$new(20)
+# create 20 agents
+BeeSim$drawBeetles()
+for (i in 1:5) { BeeSim$iter()}
+BeeSim$drawBeetles()
+for (i in 1:50) { BeeSim$iter(debug=FALSE) ; BeeSim$mating (debug=FALSE) }
+BeeSim$drawBeetles()
+for (i in 1:100) { BeeSim$iter(debug=FALSE) ; BeeSim$mating (debug=FALSE)}
+BeeSim$drawBeetles()
+for (i in 1:250) { BeeSim$iter(debug=FALSE) ; BeeSim$mating (debug=FALSE) } 
+BeeSim$drawBeetles()
+for (i in 1:500) { BeeSim$iter(debug=FALSE) ; BeeSim$mating (debug=FALSE)}
+BeeSim$plotMonitor()
+end_time= Sys.time() 
+end_time - start_time
+
+```
+
+```{r eval=FALSE}
+set.seed(123)
+source('beesim.R')
+BeeSim$main()
+```
+
+>>>>>>> 9fc7bb3 (Regular push)

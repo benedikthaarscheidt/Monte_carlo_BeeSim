@@ -138,25 +138,27 @@ BeeSim$seasons_lakes <- function(iter) {
   value_season_lakes = 1.5 * sin(x) + 2.5
   return(value_season_lakes)
 }
-x_values_at_offset = numeric(0)
-find_offset_intersections <- function() {
+
+
+BeeSim$find_offset_intersections <- function() {
   self = BeeSim
- 
+  self$x_values_at_offset <- numeric(0)
   
   # Iterate through values and check for zero-crossings
   for (i in 1:(nrow(self$monitor) - 1)) {
-    y1 = BeeSim$seasons_lakes(self$monitor$iter[i])
-    y2 = BeeSim$seasons_lakes(self$monitor$iter[i + 1])
+    y1 = self$seasons_lakes(self$monitor$iter[i])
+    y2 = self$seasons_lakes(self$monitor$iter[i + 1])
     
-    if ((y1 <= 0 && y2 >= 0) || (y1 >= 0 && y2 <= 0)) {
+    if ((y1 <= 2.5 && y2 >= 2.5) || (y1 >= 2.5 && y2 <= 2.5)) {
       # Interpolate for more accurate zero-crossing
       x_crossing = approxfun(c(y1, y2), c(self$monitor$iter[i], self$monitor$iter[i + 1]), rule = 2)(0)
-      x_values_at_offset = c(x_values_at_offset, x_crossing)
+      self$x_values_at_offset <- c(self$x_values_at_offset, x_crossing)
     }
   }
-  
-  return(x_values_at_offset)
+ 
+  return(self$x_values_at_offset)
 }
+
 BeeSim$seasons_lake <- function() {
   self = BeeSim
   c=2*pi*nrow(self$monitor)/53-pi/2
@@ -430,21 +432,26 @@ BeeSim$mating <- function (sight=4,min.female=10,min.male=5,min.age=10,childs=5,
 BeeSim$plotMonitor <- function() {
   self = BeeSim
   iter = self$monitor$iter
-  
+  self$find_offset_intersections()
+
   # Adjust x-axis limits based on the range of iterations
   xlim = range(iter)
   
   plot(self$monitor$food ~ iter, col = "grey60", type = "l", ylim = c(0, max(self$monitor$food)), xlim = xlim, ylab = "Counts", xlab = "Iterations", main = "Model Monitoring", lwd = 3)
   grid()
   points(self$monitor$beetles ~ iter, col = "blue", type = "l", lwd = 3)
-  
-  # Add seasonal indicators (vertical lines)
-  for (value in x_values_at_offset) {
-    abline(v = value, col = "green", lty = 2)
-  }
+  print(self$x_values_at_offset)
+ 
+
+  for (value in self$x_values_at_offset) {
+    # Specify absolute coordinates for the vertical lines
+    x_coord <- value
+    y_coord <- max(self$monitor$food)  # Adjust this based on your y-axis range
+    
+    segments(x0 = x_coord, y0 = 0, x1 = x_coord, y1 = y_coord, col = "green", lty = 2)
 }
 
-
+}
 
 
 
@@ -461,7 +468,7 @@ BeeSim$plotMonitor <- function() {
 #' - _beetles_ - number of beetles, default: 20   
 #' - _pdf_     - should a pdf (beetles-simul.pdf) be produced, default: FALSE
 #' 
-BeeSim$main <- function (iter=100,beetles=20,pdf=FALSE) {
+BeeSim$main <- function (iter=10,beetles=20,pdf=FALSE) {
   if(pdf) {
     pdf("beetles-simul.pdf"); 
   }
