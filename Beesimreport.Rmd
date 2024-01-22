@@ -8,7 +8,7 @@ bibliography: beesim.bib
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-<<<<<<< HEAD
+source('beesim.R')
 ```
 
 # Abstract
@@ -34,7 +34,7 @@ In the Results and Discussion section of this report, we will discuss the overal
 
 ```{r eval=FALSE ,fig=TRUE,fig.width=16,fig.height=9}
 set.seed(123)
-source('beesim.R')
+
 par(mfrow=c(2,3),mai=c(0.2,0.2,0.7,0.1))
 BeeSim$new(20)   # create 20 agents
 BeeSim$drawBeetles()
