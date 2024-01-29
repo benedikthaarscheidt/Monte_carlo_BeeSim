@@ -1,5 +1,6 @@
 library(plotrix) ### for draw.ellipse, draw.circle
-BeeSim = new.env() #new environment isolated from global environment is created 
+BeeSim = new.env() #new environment isolated from global environment is created
+
 ### Initialize data frames beetles and food
 #' ---
 #' title: BeeSim Monte Carlo Environment
@@ -65,6 +66,8 @@ BeeSim$new <- function (n) {
   
   self$monitor=data.frame(iter=0,beetles=nrow(self$beetles),food=nrow(self$food), weekofyear=1)
 }
+
+
 ### Draw an individual beetle of the beetles data frame 
 ### Private Function indicated by the . 
 BeeSim$.drawBeetle <- function (i,min.age=10) {
@@ -452,9 +455,6 @@ BeeSim$plotMonitor <- function() {
 }
 
 }
-
-
-
 
 
 #' ## BeeSim$main() - function to run a simulation

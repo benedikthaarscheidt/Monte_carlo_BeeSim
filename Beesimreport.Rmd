@@ -1,5 +1,5 @@
 ---
-title: "Beesimreport"
+title: "BeeSim report: How does a seasonal fluctuation in food availability and water body size affect a beetle population?"
 author: "Ahmed Tijani Akinfalabi, Benedikt Haarscheidt, Lisa Skroblin, Jaesub Kim"
 date: "`r Sys.Date()`"
 output: html_document
@@ -32,23 +32,91 @@ The diverse examples mentioned earlier closely align with the simple model we ha
 
 In the Results and Discussion section of this report, we will discuss the overall changes resulting from variations in food distribution and environmental changes. Through this, we aim to enhance our understanding of how these two variables contribute to the complexity of beetle population dynamics. Ultimately, we may gain insights into how to model species behavior in less predictable environments. Furthermore, based on this understanding, we hope to increase our understanding of Monte Carlo simulations that can be applied to various fields, and to make a significant contribution to the overall theoretical and practical framework for our future research activities.
 
-```{r eval=FALSE ,fig=TRUE,fig.width=16,fig.height=9}
-set.seed(123)
+# Results
+
+The starting point of our analysis of the annual cycle of the beetle population is set at the beginning of the wet season (green trees, lake size at half). To allow the population to stabilize from potentially imbalanced starting conditions, we will not look at year 1 but instead allow the simulation to run for 212 iterations (weeks), i.e. 5 years, first.
+Figure 1.A shows the original 20 beetles at the onset of the simulation, figure 1.B shows the population at 212 weeks. The number of food items is similar, and the population of beetles has doubled, but most strikingly the distribution of the beetles has changed. Whereas originally the beetles were spread out across the entire area, they now cluster around the smaller food source (lower left quadrant). This does not change much throughout the following year.
+At the middle of the wet season (figure 1.C, iteration 225), almost half the beetles have died while both the lake size and the amount of food have increased. 
+At the turn of wet season to dry season (figure 1.D, iteration 238), the amounts of food have increased exponentially and the lake area has also grown. The beetles population has also increased.
+Finally, at the height of dry season (figure 1.E, iteration 251), the lake area and the available food have both decreased slightly while the beetle population has grown to more than double the number of animals in the height of the dry season.
+Figure 1.F shows the fluctuation of food and beetles over the course of five years. Both oscillate with the same period (matching the seasons), but the differences of maxima and minima are much more extreme in the amounts of food than in the beetles (similar minima of 25-50 but maxima of 700-1000 for the food and 100-180 for the beetles). The oscillation of the beetle population is about half a season behind that of the food.
+
+```{r eval=FALSE ,fig=TRUE,fig.width=16,fig.height=11}
+set.seed(111)
 
 par(mfrow=c(2,3),mai=c(0.2,0.2,0.7,0.1))
-BeeSim$new(20)   # create 20 agents
+BeeSim$new(20)
 BeeSim$drawBeetles()
-BeeSim$iter()
-for (i in 1:5) { BeeSim$iter() }
+for (i in 1:212) { BeeSim$iter(debug=FALSE) ; BeeSim$mating(debug=FALSE)}
 BeeSim$drawBeetles()
-for (i in 1:10) { BeeSim$iter() ; BeeSim$mating()}
+for (i in 1:13) { BeeSim$iter(debug=FALSE) ; BeeSim$mating(debug=FALSE)}
 BeeSim$drawBeetles()
-for (i in 1:35) { BeeSim$iter(debug=FALSE) ; BeeSim$mating(debug=FALSE)}
+for (i in 1:13) { BeeSim$iter(debug=FALSE) ; BeeSim$mating(debug=FALSE)}
 BeeSim$drawBeetles()
-for (i in 1:35) { BeeSim$iter(debug=FALSE) ; BeeSim$mating(debug=FALSE)}
+for (i in 1:13) { BeeSim$iter(debug=FALSE) ; BeeSim$mating(debug=FALSE)}
 BeeSim$drawBeetles()
 BeeSim$plotMonitor()
 ```
+
+## Stability of the above results across repeated simulations 
+In order to establish whether the above pattern is the typical development of the beetle population over five years, we ran the simulation 50 times with the same starting parameters. 
+Table 1 shows the numbers of beetles at the height of the fifth dry and wet season (after 238 and 265 iterations respectively).
+Table 2 shows the minimum and maximum,the median and the mean of beetle populations across all 50 iterations by season. It also includes the standard deviation.
+While the minima and maxima do not differ much between the seasons, the median and mean values of the wet season are only about 60% of the respective values in the dry season. The standard deviation for the dry and wet season are 25.21 and 20.67.
+
+```{r}
+
+set.seed(111)
+
+runs=5 #50
+iter=106 #265
+
+results <- data.frame(
+  Run = numeric(runs),
+  LastDrySeason_Beetles = numeric(runs),
+  LastWetSeason_Beetles = numeric(runs)
+)
+
+for (run in 1:runs) {
+  
+  BeeSim$new(20)
+  
+  for (i in 1:iter) {
+    BeeSim$iter(debug=FALSE)
+    BeeSim$mating(debug=FALSE)
+  }
+  
+  # Store results in the data frame
+  results$Run[run] <- run
+  results$LastDrySeason_Beetles[run] <- BeeSim$monitor[iter, 'beetles']
+  results$LastWetSeason_Beetles[run] <- BeeSim$monitor[iter-27, 'beetles']
+}
+print(results)
+
+# Calculate statistics
+summary_stats <- data.frame(
+  Metric = c("Max beetles", "Min beetles", "Median beetles", "Mean beetles", "SD beetles"),
+  LastDrySeason = c(max(results$LastDrySeason_Beetles), min(results$LastDrySeason_Beetles), median(results$LastDrySeason_Beetles), mean(results$LastDrySeason_Beetles), sd(results$LastDrySeason_Beetles)),
+  LastWetSeason = c(max(results$LastWetSeason_Beetles), min(results$LastWetSeason_Beetles), median(results$LastWetSeason_Beetles), mean(results$LastWetSeason_Beetles), sd(results$LastWetSeason_Beetles))
+)
+print(t(summary_stats))
+
+```
+
+# Discussion
+The oscillation in the beetle population has a period matching the season and a shift in the curve of about half a season compared to the food curve. This result strongly resembles that of a predator-prey-relationship modeled by the Lotka-Volterra-equations. In such a model, the increase in the "prey population", here the amount of available food, is linearly dependent to its own size but the decrease is linearly dependent on both the size of its own as well as the predator population. The growth of the predator population is positively linearly correlated to its own size as well as that of the prey population, and negatively linearly correlated to the size of the prey population.
+While in our model the decrease in food is (in part) dependent on the number of beetles, the "creation" of food is not. Instead it correlates to the seasons, giving it is sinus-shaped curve.
+The size of the beetle population is only indirectly dependent on the amount of food insofar as beetles might starve (decreasing population size) and can only reproduce when they have eaten enough. This adds an element of randomness to the model that the Lotka-Volterra-equations lack.
+It seems that the Monte-Carlo-Simulation is a stochastic alternative to modeling the predator-prey-relationship deterministically using the Lotka-Volterra-equations.
+
+The beetle population in our model is also decreased when beetles drown in the lake. While the size of the lake and therefore the likeliness of beetles drowning is not dependent on the amount of food, it is dependent on the season. During the wet season, when there is increased food regrowing, the lake area increases while during the dry season, when food regrowing is rarer, the lake area diminishes. So there are contradictory effects on the beetle population during each season (either a large food supply and a maximal lake area or a smaller food supply and a minimal lake area). We can conclude that (given the parameters used for our model) the amount of available food is affecting the beetle population more strongly since the beetle population grows with the food supply. This effect is somewhat delayed since the beetles have to "find" and eat the food first and then "find" a mate and reproduce. If the effect of the lake size increase was more impactful than the food supply, the numbers of beetles would decrease simultaneously with the lake size, i.e. with the passing of the wet season.
+
+Despite the parameters of the simulation being constant, the outcome for the beetle population varied greatly between the 50 runs. While in some runs the population was thriving with more than 100 individuals, in other runs it barely survived. There was however not a single run in which the beetle population died out.
+It would be interesting to see if these small populations can stabilize over a longer time span, e.g. 10 years or 530 iterations, since there is more food available per beetle in smaller populations. On the other hand, in such a small population, there is a lower chance of beetles "finding" each other to mate and reproduce.
+
+Overall, the Monte Carlo Simulation proved to be suitable for modeling beetle population dynamics. It allows for easy extensions to include additional factors in an already existing model and is more versatile and less computationally intense than the Lotka-Volterra-equations that focus primarily on predator-prey-relationships and require differential equations to be solved. However, it could not provide a definite answer as to how a beetle population will develop under the chosen parameters given the wide span between possible outcomes and the high standard deviation. This might be solved by more runs over more iterations to create a more statistically sound result but it could also simply be due to the randomness inherent to the Monte Carlo Simulation model.
+
+
 
 # Literature
 =======
