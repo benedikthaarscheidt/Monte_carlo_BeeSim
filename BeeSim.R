@@ -52,7 +52,7 @@ BeeSim$new <- function (n) {
   ## store them in a data frame BeeSim$beetles with columns
   ## x, y, sex, color, points (random number between 4 and 7 with even distribution), 
   ## energy (should be initialized with a value 10)
-  self$beetles=data.frame(x=runif(n,min=0,max=50), #this is the function for the unifor distribution not following a central tendency but all the values occuring equally as likely 
+  self$beetles=data.frame(x=runif(n,min=0,max=50), #this is the function for the uniform distribution not following a central tendency but all the values occuring equally as likely 
                           y=runif(n,min=0,max=50),
                           sex=c("F","M")[rbinom(n,1,p=0.5)+1], #+1 because female is going to be 1 and male is going to be 2 
                           color=c("red","orange")[rbinom(n,1,p=c(0.8,0.2))+1],# +1 because vector with 0s cant be indexed --> 80% chance of 1 (red) and 20% chance of 2 (orange)
@@ -232,7 +232,7 @@ BeeSim$iter <- function (sd=1,sight=2,debug=TRUE) {
   ## * move randomly every beetle within the grid
   ##   - sight x and y: mean=2,sd=1
   ##   - create vector of x and y changes
-  x=rnorm(nrow(self$beetles),mean=0,sd=sd) #mean of 0 becaue the beetles can move to a negative position --> move any direction from their initial point. 
+  x=rnorm(nrow(self$beetles),mean=0,sd=sd) #mean of 0 because the beetles can move to a negative position --> move any direction from their initial point. 
   y=rnorm(nrow(self$beetles),mean=0,sd=sd)
   ##   - add these values to the coordinates
   self$beetles$x=self$beetles$x+x

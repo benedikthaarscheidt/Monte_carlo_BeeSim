@@ -1,5 +1,5 @@
 ---
-title: "Beesimreport"
+title: "Beesim Report"
 author: "Ahmed Tijani Akinfalabi, Benedikt Haarscheidt, Lisa Skroblin, Jaesub Kim"
 date: "`r Sys.Date()`"
 output: html_document
@@ -31,6 +31,29 @@ Inspired by the principles of MCS, we have constructed a model to predict how th
 The diverse examples mentioned earlier closely align with the simple model we have established for this report. The seasonal dependencies of environmental variables in cases of infectious diseases are strikingly similar to the environmental variables in our model. Similarly, the examples of interactions among cell populations have analogies to the dynamics of ecosystems, and are ultimately not all that different from what we are investigating in this report.
 
 In the Results and Discussion section of this report, we will discuss the overall changes resulting from variations in food distribution and environmental changes. Through this, we aim to enhance our understanding of how these two variables contribute to the complexity of beetle population dynamics. Ultimately, we may gain insights into how to model species behavior in less predictable environments. Furthermore, based on this understanding, we hope to increase our understanding of Monte Carlo simulations that can be applied to various fields, and to make a significant contribution to the overall theoretical and practical framework for our future research activities.
+
+
+
+# Method
+
+The simulation was implemented using the BeeSim framework, designed to model a population of beetles within an ecosystem. The primary objective was to introduce dynamic seasonal changes in the availability of food resources, mimicking natural variations in environmental conditions.
+
+Seasonal Food Amount Changes:
+To incorporate seasonal variations in food availability, we developed 4 (four) functions;
+
+• seasons(iter) function: This function calculates a seasonal value based on the iteration (iter) in the simulation. It uses a sine function to simulate a seasonal pattern, with the period of the sine wave corresponding to 53 iterations (assuming a year with 53 time steps).
+
+• seasons_lakes(iter): Similar to the first function, this calculates a seasonal value for lakes based on the iteration. It uses a sine function to generate a seasonal pattern with a period of 53 iterations.
+
+• find_offset_intersections(): This function finds the intersections (zero-crossings) between the seasonal patterns of lakes and the bee simulation. It iterates through the monitoring data, checks for zero-crossings, and records the x-values (iterations) where these intersections occur. It uses linear interpolation (approxfun) to estimate the exact iteration where the zero-crossing occurs.
+
+• seasons_lake(): This function is responsible for determining the seasonal variation in the lake area within the simulation. This function calculates the lake area based on a sinusoidal curve, and the resulting value is intended to represent the changing lake conditions over time.
+
+Furthermore, the the drawLandscape() function was modified to enable dynamic visual representation with regards to the seasons. It incorporates seasonality by adjusting the color of trees and the size of the lake based on the value returned by seasons_lake(). Also, the BeeSim$iter() function was modified to include seasons indicator in the monitor plot and updated with information about the current iteration, the number of beetles, the number of food units, and the week of the year.
+
+This enhancements and modifications provide insights into the temporal dynamics of food availability, allow for the analysis of the beetles' interactions with their environment and also allow the simulation to dynamically adjust the quantity of available food items throughout the course of the simulated year.
+
+This monitoring approach enables a comprehensive analysis of the impact of seasonal changes on the beetle population and their response to varying food resources.
 
 ```{r eval=FALSE ,fig=TRUE,fig.width=16,fig.height=9}
 set.seed(123)
