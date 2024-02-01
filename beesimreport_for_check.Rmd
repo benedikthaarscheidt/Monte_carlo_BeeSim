@@ -3,11 +3,14 @@ title: "Beesim Report"
 author: "Ahmed Tijani Akinfalabi, Benedikt Haarscheidt, Lisa Skroblin, Jaesub Kim"
 date: "`r Sys.Date()`"
 output: 
-  html_document
-  toc: yes
+  pdf_document:
+    toc: true
+    toc_depth: 2
+  html_document:
+    toc: true
     toc_depth: 5
-    toc_float: yes
-    bibliography: beesim.bib
+    df_print: paged
+bibliography: beesim.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -146,6 +149,7 @@ Overall, the Monte Carlo Simulation proved to be suitable for modeling beetle po
 
 
 # Literature
+
 =======
 source('BeeSim.R')
 ```
