@@ -91,7 +91,7 @@ BeeSim$plotMonitor()
 At the middle of the wet season (**Figure 1.C**, iteration 225), almost half the beetles have died while both the lake size and the amount of food have increased. 
 At the turn of wet season to dry season (**Figure 1.D**, iteration 238), the amounts of food have increased exponentially and the lake area has also grown. The beetles population has also increased.
 Finally, at the height of dry season (**Figure 1.E**, iteration 251), the lake area and the available food have both decreased slightly while the beetle population has grown to more than double the number of animals in the height of the dry season.
-**Figure 1.F** shows the fluctuation of food and beetles over the course of five years. Both oscillate with the same period (matching the seasons), but the differences of maxima and minima are much more extreme in the amounts of food than in the beetles (similar minima of 25-50 but maxima of 700-1000 for the food and 100-180 for the beetles). The oscillation of the beetle population is about half a season behind that of the food.
+**Figure 1.F** shows the fluctuation of food and beetles over the course of five years. The gray line represents the number of food, and the blue line represents the population of Beetles. Seasonal changes are demarcated by green lines. Both oscillate with the same period (matching the seasons), but the differences of maxima and minima are much more extreme in the amounts of food than in the beetles (similar minima of 25-50 but maxima of 700-1000 for the food and 100-180 for the beetles). The oscillation of the beetle population is about half a season behind that of the food.
 
 ## Stability of the above results across repeated simulations 
 
