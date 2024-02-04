@@ -440,7 +440,7 @@ BeeSim$plotMonitor <- function() {
   plot(self$monitor$food ~ iter, col = "grey60", type = "l", ylim = c(0, max(self$monitor$food)), xlim = xlim, ylab = "Counts", xlab = "Iterations", main = "Model Monitoring", lwd = 3)
   grid()
   points(self$monitor$beetles ~ iter, col = "blue", type = "l", lwd = 3)
-  print(self$x_values_at_offset)
+  #print(self$x_values_at_offset)
  
 
   for (value in self$x_values_at_offset) {
