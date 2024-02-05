@@ -3,13 +3,13 @@ title: "Beesim Report"
 author: "Ahmed Tijani Akinfalabi, Benedikt Haarscheidt, Lisa Skroblin, Jaesub Kim"
 date: "`r Sys.Date()`"
 output: 
+  pdf_document:
+    toc: true
+    toc_depth: 2
   html_document:
     toc: true
     toc_depth: 5
     df_print: paged
-  pdf_document:
-    toc: true
-    toc_depth: 2
 bibliography: beesim.bib
 ---
 
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 source('beesim.R')
 options(repos = c(CRAN = "https://cloud.r-project.org"))
-install.packages("kableExtra")
+#install.packages("kableExtra")
 library(kableExtra)
 ```
 
